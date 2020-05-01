@@ -1,7 +1,7 @@
 import { BigInt, Bytes, Address, EthereumEvent } from '@graphprotocol/graph-ts'
 
 import { Transfer } from '../../generated/StandardToken/ERC20'
-import { Account, AccountSnapshot, TokenTransfer } from '../../generated/schema'
+import { Account, TokenTransfer } from '../../generated/schema'
 
 const GENESIS_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -33,27 +33,9 @@ export function handleTransfer(event: Transfer): void {
     tokenTransfer.transaction = event.transaction.hash
     tokenTransfer.save()
 
-    // // Create from snapshot
-    // let fromSnapshot = new AccountSnapshot(event.params.from.toHex() + '-' + event.address.toHex() + '-' + event.block.timestamp.toString())
-    // fromSnapshot.account = fromAccount.account
-    // fromSnapshot.token = fromAccount.token
-    // fromSnapshot.balance = fromAccount.balance
-    // fromSnapshot.block = fromAccount.block
-    // fromSnapshot.timestamp = fromAccount.timestamp
-    // fromSnapshot.save()
-
-    // // Create to snapshot
-    // let toSnapshot = new AccountSnapshot(event.params.to.toHex() + '-' + event.address.toHex() + '-' + event.block.timestamp.toString())
-    // toSnapshot.account = toAccount.account
-    // toSnapshot.token = toAccount.token
-    // toSnapshot.balance = toAccount.balance
-    // toSnapshot.block = toAccount.block
-    // toSnapshot.timestamp = toAccount.timestamp
-    // toSnapshot.save()
-
     // Update from account
     if (fromAccount.balance.gt(event.params.value)) {
-      fromAccount.balance = fromAccount.balance - event.params.value
+      fromAccount.balance = fromAccount.balance.minus(event.params.value)
     } else {
       fromAccount.balance = new BigInt(0)
     }
@@ -62,7 +44,7 @@ export function handleTransfer(event: Transfer): void {
     fromAccount.save()
 
     // Update to account
-    toAccount.balance = toAccount.balance + event.params.value
+    toAccount.balance = toAccount.balance.plus(event.params.value)
     toAccount.block = event.block.number
     toAccount.timestamp = event.block.timestamp
     toAccount.save()

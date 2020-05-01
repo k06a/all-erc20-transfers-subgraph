@@ -12,20 +12,6 @@ type Account @entity {
 }
 
 #
-# Token balance of a particular Ethereum account in a certain timestamp. This entity is used to
-# provide information about evolution of account balances
-#
-type AccountSnapshot @entity {
-  " Equals to: <accountAddress>-<tokenAddress>-<timestamp>"
-  id: ID!
-  account: Bytes!
-  token: Bytes!
-  balance: BigInt!
-  block: BigInt!
-  timestamp: BigInt!
-}
-
-#
 # Token events
 #
 type TokenTransfer @entity {
